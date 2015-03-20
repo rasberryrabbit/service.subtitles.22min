@@ -1,0 +1,11 @@
+0.4
+- fix enum bug
+
+0.3
+- add library English key stroke to hangul converter. it works only custom search
+
+0.2 
+- more options and settings
+
+0.1 test
+- first test.
