@@ -4,5 +4,6 @@
     <string id="30002">Max load Files</string>
     <string id="30003">use title name instead of filename</string>
     <string id="30004">User-Agent</string>    
-    <string id="30005">English key to Hangul</string>        
+    <string id="30005">English key to Hangul</string>
+    <string id="30006">checking season/episode</string>
 </strings>

@@ -1,3 +1,6 @@
+0.5
+- checking season and episode in tv video
+
 0.4
 - fix enum bug
 
