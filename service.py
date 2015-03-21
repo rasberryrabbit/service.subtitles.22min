@@ -52,7 +52,7 @@ user_agent = __addon__.getSetting("user_agent")
 use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 
-ep_expr = re.compile("\d{1,2}[^\d\s]\d{1,3}")
+ep_expr = re.compile("\d{1,2}[^\d\s\.]{1,2}\d{1,3}")
 
 def prepare_search_string(s):
     s = string.strip(s)
@@ -139,13 +139,14 @@ def get_list(url, limit_file, list_mode):
         lists = re.findall(search_pattern,content_list)
         for link, title_name in lists:
             if result<limit_file:
-                if use_se_ep_check == "true":
-                    if list_mode==1 and 2!=check_season_episode(title_name,item['season'],item['episode']):
-                        continue
                 link = link.replace("&amp;","&")
                 list_files = get_files(link)
-                result += len(list_files)
                 for furl,name,flink in list_files:
+                    if use_se_ep_check == "true":
+                        if list_mode==1:
+                            if 2!=check_season_episode(name,item['season'],item['episode']) and 2!=check_season_episode(title_name,item['season'],item['episode']):
+                                continue
+                    result += 1
                     listitem = xbmcgui.ListItem(label          = "Korean",
                                                 label2         = name if use_titlename == "false" else title_name,
                                                 iconImage      = "0",
