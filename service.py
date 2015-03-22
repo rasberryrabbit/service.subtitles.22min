@@ -48,7 +48,6 @@ def clear_tempdir(strpath):
                 if low_time >= cfile_time or now_time <= cfile_time:
                     if os.path.isdir(full_path):
                         shutil.rmtree(full_path)
-                        os.rmdir(full_path)
                     else:
                         os.remove(full_path)
         except:
