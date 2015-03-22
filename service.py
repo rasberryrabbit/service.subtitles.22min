@@ -15,6 +15,7 @@ import string
 import difflib
 import HTMLParser
 import time
+import datetime
 import urllib2
 
 __addon__ = xbmcaddon.Addon()
@@ -29,13 +30,32 @@ __profile__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('profile')), 'ut
 __resource__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')), 'utf-8')
 __temp__ = unicode(xbmc.translatePath(os.path.join(__profile__, 'temp')), 'utf-8')
 
+def log(module, msg):
+    xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'))
 
+# remove file and dir with 30 days before / now after time
+def clear_tempdir(strpath):
+    if xbmcvfs.exists(strpath):
+        try:
+            low_time = time.mktime((datetime.date.today() - datetime.timedelta(days=15)).timetuple())
+            now_time = time.time()
+            for file_name in xbmcvfs.listdir(strpath)[1]:
+                if sys.platform.startswith('win'):
+                    full_path = os.path.join(strpath, file_name)
+                else:
+                    full_path = os.path.join(strpath.encode('utf-8'), file_name)
+                cfile_time = os.stat(full_path).st_mtime
+                if low_time >= cfile_time or now_time <= cfile_time:
+                    if os.path.isdir(full_path):
+                        shutil.rmtree(full_path)
+                        os.rmdir(full_path)
+                    else:
+                        os.remove(full_path)
+        except:
+            log(__scriptname__,"error on cleaning temp dir")
 
-if xbmcvfs.exists(__temp__):
-    if sys.platform.startswith('win'):
-        shutil.rmtree(__temp__)
-    else:
-        shutil.rmtree(__temp__.encode('utf-8'))
+clear_tempdir(__temp__)
+
 xbmcvfs.mkdirs(__temp__)
 
 sys.path.append(__resource__)
