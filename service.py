@@ -17,6 +17,9 @@ import HTMLParser
 import time
 import datetime
 import urllib2
+import gzip
+import zlib
+import StringIO
 
 __addon__ = xbmcaddon.Addon()
 __author__ = __addon__.getAddonInfo('author')
@@ -101,12 +104,33 @@ def check_ext(str):
             break
     return retval
 
+# support compressed content
+def decode_content (page):
+    encoding = page.info().get("Content-Encoding")    
+    if encoding in ('gzip', 'x-gzip', 'deflate'):
+        content = page.read()
+        if encoding == 'deflate':
+            data = StringIO.StringIO(zlib.decompress(content))
+        else:
+            data = gzip.GzipFile('', 'rb', 9, StringIO.StringIO(content))
+        page = data.read()
+    else:
+        page = page.read()
+    return page
+
+def read_url(url):
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-Agent',user_agent), ('Accept-Encoding','gzip,deflate')]
+    rep = opener.open(url)
+    res = decode_content(rep)
+    rep.close()
+    return res
+
 # 디씨인사이드의 페이지를 파싱해서 파일의 이름과 다운로드 주소를 얻어냄.
 def get_files(url):
     ret_list = []
     file_pattern = "<li class=\"[^b][^\"]+\"><a href=\"([^\"]+)\">([^<]+)<"
-    req_file = urllib2.urlopen(urllib2.Request(url,headers={'User-Agent': user_agent}))
-    content_file = req_file.read()
+    content_file = read_url(url)
     files = re.findall(file_pattern,content_file)
     for flink,name in files:
         # 확장자를 인식해서 표시.
@@ -149,14 +173,13 @@ def check_season_episode(str_title, se, ep):
 
 # 22min.com의 페이지의 내용을 추출해서 디씨인사이드의 링크를 얻어냄. 그리고 파일 다운로드를 호출.
 def get_list(url, limit_file, list_mode):
-    search_pattern = "<a class=\"list-group-item subtitle\" href=\"([^\"]+)\" [^>]+>\s+?<div [^>]+>\s+?<span>([^<]+)</span>"
-    req_list = urllib2.urlopen(urllib2.Request(url,headers={'User-Agent': user_agent}))
-    content_list = req_list.read()
+    search_pattern = "<a class=\"list-group-item subtitle\" href=\"([^\"]+)\" [^>]+>\s+?<div [^>]+>\s+?(.+)?\s+?<span>([^<]+)</span>\s+?<span class="
+    content_list = read_url(url)
     result = 0
     # 자막이 없음을 알리는 페이지를 인식.
     if content_list.find("<div class=\"alert alert-warning\">")==-1:
         lists = re.findall(search_pattern,content_list)
-        for link, title_name in lists:
+        for link, dummy_vote, title_name in lists:
             if result<limit_file:
                 link = link.replace("&amp;","&")
                 list_files = get_files(link)
