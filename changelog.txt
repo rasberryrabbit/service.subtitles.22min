@@ -1,3 +1,7 @@
+0.6
+- support gzip compressed html page.
+- new expression for list item added vote number.
+
 0.5
 - checking season and episode in tv video
 
