@@ -184,7 +184,7 @@ def engtypetokor(src):
                 njung = 19
             else:
                 if ncho != -1:
-                    res += makehangul(ncho,njung,cjong)
+                    res += makehangul(ncho,njung,njong)
                     ncho = -1
                 else:
                     res += jung_data[njung]
