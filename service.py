@@ -210,7 +210,7 @@ def get_list(url, limit_file, list_mode):
             if result<limit_file:
                 link = link.replace("&amp;","&")
                 if link.find("bunyuc.com")!=-1:
-                    list_fies = get_files_bun(link)
+                    list_files = get_files_bun(link)
                 else:
                     list_files = get_files(link)
                 for furl,name,flink in list_files:
