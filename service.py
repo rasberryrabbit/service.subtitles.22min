@@ -20,6 +20,7 @@ import urllib2
 import gzip
 import zlib
 import StringIO
+import cookielib
 
 __addon__ = xbmcaddon.Addon()
 __author__ = __addon__.getAddonInfo('author')
@@ -32,6 +33,15 @@ __cwd__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('path')), 'utf-8')
 __profile__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('profile')), 'utf-8')
 __resource__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')), 'utf-8')
 __temp__ = unicode(xbmc.translatePath(os.path.join(__profile__, 'temp')), 'utf-8')
+
+# prepare cookie url opener
+cookies = cookielib.LWPCookieJar()
+handlers = [
+    urllib2.HTTPHandler(),
+    urllib2.HTTPSHandler(),
+    urllib2.HTTPCookieProcessor(cookies)
+    ]
+opener2 = urllib2.build_opener(*handlers)
 
 def log(module, msg):
     xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'))
@@ -137,6 +147,23 @@ def get_files(url):
         if check_ext(name)!=-1:
             ret_list.append([url, name, flink])
     return ret_list
+    
+# 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
+def get_files_bun(url):
+    ret_list = []
+    file_pattern_bun = "<a class=\"[^\"]+\"\s+href=\"([^\"]+)\"><span class=[^\>]+>[^\<]+</span><i class=[^>]+></i>([^<]+)<"
+    content_file_bun = read_url(url)
+    files_bun = re.findall(file_pattern_bun,content_file_bun)
+    for flink,name in files_bun:
+        # 확장자를 인식해서 표시
+        epos = name.find(".smi")
+        if epos==-1:
+            epos = name.find(".srt")
+        if epos!=-1:
+            name = name[:epos+4]
+            flink = flink.replace("&amp;","&")
+            ret_list.append([url, name, flink])
+    return ret_list    
 
 def check_season_episode(str_title, se, ep):
     result = 0
@@ -182,7 +209,10 @@ def get_list(url, limit_file, list_mode):
         for link, dummy_vote, title_name in lists:
             if result<limit_file:
                 link = link.replace("&amp;","&")
-                list_files = get_files(link)
+                if link.find("bunyuc.com")!=-1:
+                    list_fies = get_files_bun(link)
+                else:
+                    list_files = get_files(link)
                 for furl,name,flink in list_files:
                     if use_se_ep_check == "true":
                         if list_mode==1:
@@ -215,6 +245,22 @@ def download_file(url,furl,name):
     req = urllib2.urlopen(urllib2.Request(furl,headers={'Referer': url, 'User-Agent': user_agent}))
     local_file_handle = open( local_temp_file, "wb" )
     local_file_handle.write(req.read())
+    local_file_handle.close()
+    subtitle_list.append(local_temp_file)
+    return subtitle_list
+
+# 번역 포럼에서 파일을 다운로드
+def download_file_bun(url,furl,name):
+    subtitle_list = []
+    local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
+    # Get cookie
+    req1 = urllib2.Request(url,headers={'User-Agent': user_agent})
+    res1 = opener2.open(req1)
+    # Download File
+    req2 = urllib2.Request(furl,headers={'User-Agent': user_agent})
+    res2 = opener2.open(req2)
+    local_file_handle = open( local_temp_file, "wb" )
+    local_file_handle.write(res2.read())
     local_file_handle.close()
     subtitle_list.append(local_temp_file)
     return subtitle_list
@@ -312,7 +358,10 @@ if params['action'] == 'search' or params['action'] == 'manualsearch':
     search(item)
 
 elif params['action'] == 'download':
-    subs = download_file(urllib2.unquote(params['url']),urllib2.unquote(params['furl']),params['name'])
+    if params['url'].find("bunyuc.com")!=-1:
+        subs = download_file_bun(urllib2.unquote(params['url']),urllib2.unquote(params['furl']),params['name'])
+    else:    
+        subs = download_file(urllib2.unquote(params['url']),urllib2.unquote(params['furl']),params['name'])
     for sub in subs:
         listitem = xbmcgui.ListItem(label=sub)
         xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=sub,listitem=listitem,isFolder=False)
