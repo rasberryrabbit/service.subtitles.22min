@@ -84,7 +84,7 @@ user_agent = __addon__.getSetting("user_agent")
 use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 
-ep_expr = re.compile("\d{1,2}[^\d\s\.]{1,2}\d{1,3}")
+ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
 
 def prepare_search_string(s):
     s = string.strip(s)
@@ -171,22 +171,11 @@ def check_season_episode(str_title, se, ep):
     new_season = ""
     new_episode = ""    
     if re_str:
-        str_temp = re_str.group(0)
-        for i in range(0, len(str_temp)):
-            c = str_temp[i]
-            if c.isdigit():
-                       new_season += c
-            else:
-                break
-        for i in range(len(str_temp)-1, -1, -1):
-            c = str_temp[i]
-            if c.isdigit():
-                       new_episode = c + new_episode
-            else:
-                break
-    if new_season=="":
-        new_season="0"            
-    if new_episode=="":
+        new_season = re_str.group(1)
+        new_episode = re_str.group(3)
+    if new_season.strip()=="":
+        new_season="0"
+    if new_episode.strip()=="":
         new_episode="0"
     if se=="":
         se="0"
