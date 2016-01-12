@@ -1,3 +1,6 @@
+0.8.1
+- more reliable season/episode checking
+
 0.8
 - change code in season/episode checking
 
