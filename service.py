@@ -205,9 +205,10 @@ def get_list(url, limit_file, list_mode):
                 for furl,name,flink in list_files:
                     if use_se_ep_check == "true":
                         if list_mode==1:
-                            if 0==check_season_episode(title_name,item['season'],item['episode']):
-                                if 0==check_season_episode(name,item['season'],item['episode']):
-                                    continue
+                            ep_check = check_season_episode(title_name,item['season'],item['episode'])
+                            ep_check += check_season_episode(name,item['season'],item['episode'])
+                            if ep_check < 2:
+                                continue
                     result += 1
                     listitem = xbmcgui.ListItem(label          = "Korean",
                                                 label2         = name if use_titlename == "false" else title_name,
