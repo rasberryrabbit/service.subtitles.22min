@@ -243,9 +243,18 @@ def download_file(url,furl,name):
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
     req = urllib2.urlopen(urllib2.Request(furl,headers={'Referer': url, 'User-Agent': user_agent}))
-    local_file_handle = open( local_temp_file, "wb" )
-    local_file_handle.write(req.read())
-    local_file_handle.close()
+    if name.find(".txt")==-1:
+        local_file_handle = open( local_temp_file, "wb" )
+        local_file_handle.write(req.read())
+        local_file_handle.close()
+    else:
+        # check content on txt file
+        subbuf = req.read()
+        if subbuf.find("<SAMI>")!=-1:
+            local_temp_file += '.smi'
+        local_file_handle = open( local_temp_file, "wb" )
+        local_file_handle.write(subbuf)
+        local_file_handle.close()
     subtitle_list.append(local_temp_file)
     return subtitle_list
 
