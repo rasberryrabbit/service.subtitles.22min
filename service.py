@@ -85,6 +85,7 @@ use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
+sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
 def prepare_search_string(s):
     s = string.strip(s)
@@ -106,13 +107,20 @@ def get_subpages(query,list_mode=0):
     return file_count
 
 def check_ext(str):
-    ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
     retval = -1
-    for ext in ext_str:
+    for ext in sub_ext_str:
         if str.lower().find(ext)!=-1:
             retval=1
             break
     return retval
+
+def check_ext_pos(str):
+    retval = -1
+    for ext in sub_ext_str:
+        retval=str.lower().find(ext)
+        if retval!=-1:
+            break
+    return retval    
 
 # support compressed content
 def decode_content (page):
@@ -156,9 +164,7 @@ def get_files_bun(url):
     files_bun = re.findall(file_pattern_bun,content_file_bun)
     for flink,name in files_bun:
         # 확장자를 인식해서 표시
-        epos = name.find(".smi")
-        if epos==-1:
-            epos = name.find(".srt")
+        epos = check_ext_pos(name)
         if epos!=-1:
             name = name[:epos+4]
             flink = flink.replace("&amp;","&")
