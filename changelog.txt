@@ -1,3 +1,6 @@
+0.8.3
+- fix manual search in hangul
+
 0.8.2
 - more subtitle extension support in bunyuc forum.
 

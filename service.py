@@ -96,7 +96,11 @@ def prepare_search_string(s):
 def get_subpages(query,list_mode=0):
     file_count = 0
     page_count = 1
-    newquery = urllib.quote_plus(prepare_search_string(query))
+    # 한글은 인코딩되어서 전달됨
+    if item['mansearch']:
+        newquery = query
+    else:
+        newquery = urllib.quote_plus(prepare_search_string(query))
     # first page
     url = base_page+"/?q=%s" % (newquery)
     while page_count<=max_pages and file_count<max_file_count:
