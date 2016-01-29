@@ -87,6 +87,38 @@ use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
 sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
+def smart_quote(str):
+    ret = ''
+    spos = 0
+    epos = len(str)
+    while spos<epos:
+        ipos = str.find('%',spos)
+        if ipos == -1:
+            ret += urllib.quote_plus(str[spos:])
+            spos = epos
+        else:
+            ret += urllib.quote_plus(str[spos:ipos])
+            spos = ipos
+            ipos+=1
+            # check '%xx'
+            if ipos+1<epos:
+                if str[ipos] in string.hexdigits:
+                    ipos+=1
+                    if str[ipos] in string.hexdigits:
+                        # pass encoded
+                        ipos+=1
+                        ret+=str[spos:ipos]
+                    else:
+                        ret+=urllib.quote_plus(str[spos:ipos])
+                else:
+                    ipos+=1
+                    ret+=urllib.quote_plus(str[spos:ipos])
+                spos = ipos
+            else:
+                ret+=urllib.quote_plus(str[spos:epos])
+                spos = epos
+    return ret
+
 def prepare_search_string(s):
     s = string.strip(s)
     s = re.sub(r'\(\d\d\d\d\)$', '', s)  # remove year from title
@@ -98,7 +130,7 @@ def get_subpages(query,list_mode=0):
     page_count = 1
     # 한글은 인코딩되어서 전달됨
     if item['mansearch']:
-        newquery = query
+        newquery = smart_quote(query)
     else:
         newquery = urllib.quote_plus(prepare_search_string(query))
     # first page
