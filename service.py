@@ -85,6 +85,7 @@ use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
+subtitle_text = re.compile("\d+\:\d+\:\d+\:")
 sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
 def smart_quote(str):
@@ -285,6 +286,8 @@ def download_file(url,furl,name):
         subbuf = req.read()
         if subbuf.find("<SAMI>")!=-1:
             local_temp_file += '.smi'
+        else:
+            local_temp_file += '.srt'
         local_file_handle = open( local_temp_file, "wb" )
         local_file_handle.write(subbuf)
         local_file_handle.close()
