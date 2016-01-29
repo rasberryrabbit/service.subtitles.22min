@@ -85,7 +85,7 @@ use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
-subtitle_text = re.compile("\d+\:\d+\:\d+\:")
+subtitle_txt = re.compile("\d+\:\d+\:\d+\:")
 sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
 def smart_quote(str):

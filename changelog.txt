@@ -1,3 +1,7 @@
+0.8.4
+- enhance manual input string encoding
+- change subtitle extension rule
+
 0.8.3
 - fix manual search in hangul
 
