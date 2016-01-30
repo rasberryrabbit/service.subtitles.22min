@@ -189,7 +189,7 @@ def get_files(url):
     files = re.findall(file_pattern,content_file)
     for flink,name in files:
         # 확장자를 인식해서 표시.
-        if check_ext(name)!=-1:
+        #if check_ext(name)!=-1:
             ret_list.append([url, name, flink])
     return ret_list
     
@@ -243,8 +243,10 @@ def get_list(url, limit_file, list_mode):
                 link = link.replace("&amp;","&")
                 if link.find("bunyuc.com")!=-1:
                     list_files = get_files_bun(link)
+                    isbunyuc = True
                 else:
                     list_files = get_files(link)
+                    isbunyuc = False
                 for furl,name,flink in list_files:
                     if use_se_ep_check == "true":
                         if list_mode==1:
@@ -252,7 +254,12 @@ def get_list(url, limit_file, list_mode):
                             ep_check += check_season_episode(name,item['season'],item['episode'])
                             if ep_check < 2:
                                 continue
-                    result += 1
+                    if not isbunyuc:
+                        if check_subtitle_file(furl,flink,name):
+                            name+='.txt'
+                        else:
+                            continue
+                    result+=1
                     listitem = xbmcgui.ListItem(label          = "Korean",
                                                 label2         = name if use_titlename == "false" else title_name,
                                                 iconImage      = "0",
@@ -272,17 +279,36 @@ def get_list(url, limit_file, list_mode):
         result = 0
     return result
 
+# 디시인사이드 파일 형식 체크
+def check_subtitle_file(url,furl,name):
+    ret = True
+    if check_ext(name)==-1:
+        try:
+            req = urllib2.urlopen(urllib2.Request(furl,headers={'Referer': url, 'User-Agent': user_agent}))
+            # check jpg file
+            subbuf = req.read()
+            # jpg
+            if subbuf[0]==0xff:
+                ret = False
+            # png
+            if subbuf[0]==0x89 and subbuf[1]=='P' and subbuf[2]=='N' and subbuf[3]=='G':
+                ret = False
+        except:
+            ret = False
+            pass
+    return ret
+
 # 디씨인사이드 사이트에서 파일을 다운로드.
 def download_file(url,furl,name):
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
     req = urllib2.urlopen(urllib2.Request(furl,headers={'Referer': url, 'User-Agent': user_agent}))
-    if name.find(".txt")==-1:
+    if name.lower().find(".txt")==-1:
         local_file_handle = open( local_temp_file, "wb" )
         local_file_handle.write(req.read())
         local_file_handle.close()
     else:
-        # check content on txt file
+        # check content on txt and jpg file
         subbuf = req.read()
         if subbuf.find("<SAMI>")!=-1:
             local_temp_file += '.smi'
