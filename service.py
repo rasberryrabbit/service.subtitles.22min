@@ -105,8 +105,8 @@ def find_dict(istr):
     ret = []
     a = istr.split()
     for sstr in a:
-        if sstr in engkor_dict.keys():
-            ret.append(engkor_dict[sstr])
+        if sstr.lower() in engkor_dict.keys():
+            ret.append(engkor_dict[sstr.lower()])
     rs = ' '.join(ret)
     return urllib.quote_plus(rs)
 
