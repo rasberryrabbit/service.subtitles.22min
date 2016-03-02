@@ -96,7 +96,8 @@ def dict_read(filename):
             break
         sh, sd = line.split('=')
         sd = sd.strip()
-        dict[sh]=sd
+        if len(sd)>0:
+            dict[sh]=sd
     fin.close()
     return dict
 
@@ -375,17 +376,22 @@ def search(item):
     filename = os.path.splitext(os.path.basename(item['file_original_path']))[0]
     lastgot = 0
     list_mode = 0
+    titlename = ''
     if item['mansearch']:
         lastgot = get_subpages(item['mansearchstr'])
         if use_engkeyhan == "true":
             lastgot += get_subpages(engtypetokor(item['mansearchstr']))
     elif item['tvshow']:
         list_mode = 1
-        lastgot = get_subpages(item['tvshow'],1)
+        titlename = item['tvshow']
+        lastgot = get_subpages(titlename,1)
     elif item['title'] and item['year']:
-        lastgot = get_subpages(item['title'])
-    if lastgot == 0 and list_mode != 1:
-        lastgot = get_subpages(filename)
+        titlename = item['title']
+        lastgot = get_subpages(titlename)
+    #if lastgot == 0 and list_mode != 1:
+    #   lastgot = get_subpages(filename)
+    if use_engkor_dict=='true' and len(titlename)>0:
+        lastgot = get_subpages(find_dict(titlename))
         
 def normalizeString(str):
     return unicodedata.normalize(
