@@ -83,6 +83,41 @@ use_titlename = __addon__.getSetting("use_titlename")
 user_agent = __addon__.getSetting("user_agent")
 use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
+use_engkor_dict = __addon__.getSetting("use_engkor_dict")
+file_engkor_dict = __addon__.getSetting("file_engkor_dict")
+engkor_dict = {}
+
+def dict_read(filename):
+    dict = {}
+    fin = open(filename, 'r')
+    while True:
+        line = fin.readline()
+        if len(line)==0:
+            break
+        sh, sd = line.split('=')
+        sd = sd.strip()
+        dict[sh]=sd
+    fin.close()
+    return dict
+
+def find_dict(istr):
+    ret = []
+    a = istr.split()
+    for sstr in a:
+        if sstr in engkor_dict.keys():
+            ret.append(engkor_dict[sstr])
+    rs = ' '.join(ret)
+    return urllib.quote_plus(rs)
+
+# init dictionary
+if file_engkor_dict=='':
+    file_engkor_dict = os.path.join(__resource__.encode("utf-8"),'engkor_dict.txt')
+if use_engkor_dict=='true':
+    try:
+        engkor_dict = dict_read(file_engkor_dict)
+    except:
+        log('cannot find file %s' % file_engkor_dict)
+        pass
 
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
 subtitle_txt = re.compile("\d+\:\d+\:\d+\:")

@@ -6,4 +6,6 @@
     <string id="30004">User-Agent</string>        
     <string id="30005">영타를 한글로 변환 사용</string>
     <string id="30006">시즌/에피소드를 비교</string>
+    <string id="30007">영문->한글 사전 사용</string>
+    <string id="30008">영문->한글 사전 파일</string>
 </strings>
