@@ -32,6 +32,7 @@ __language__ = __addon__.getLocalizedString
 __cwd__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('path')), 'utf-8')
 __profile__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('profile')), 'utf-8')
 __resource__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')), 'utf-8')
+__resource_dict__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources')), 'utf-8')
 __temp__ = unicode(xbmc.translatePath(os.path.join(__profile__, 'temp')), 'utf-8')
 
 # prepare cookie url opener
@@ -44,7 +45,7 @@ handlers = [
 opener2 = urllib2.build_opener(*handlers)
 
 def log(module, msg):
-    xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'))
+    xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'),xbmc.LOGERROR)
 
 # remove file and dir with 30 days before / now after time
 def clear_tempdir(strpath):
@@ -94,7 +95,7 @@ def dict_read(filename):
         line = fin.readline()
         if len(line)==0:
             break
-        sh, sd = line.split('=')
+        sh, sd = line.split('=',1)
         sd = sd.strip()
         if len(sd)>0:
             dict[sh]=sd
@@ -108,16 +109,18 @@ def find_dict(istr):
         if sstr.lower() in engkor_dict.keys():
             ret.append(engkor_dict[sstr.lower()])
     rs = ' '.join(ret)
-    return urllib.quote_plus(rs)
+    #log(__scriptname__,'find_dict res, %s' % rs.decode("utf-8"))
+    return urllib.quote(rs)
 
 # init dictionary
 if file_engkor_dict=='':
-    file_engkor_dict = os.path.join(__resource__.encode("utf-8"),'engkor_dict.txt')
+    file_engkor_dict = os.path.join(__resource_dict__.encode("utf-8"),'engkor_dict.txt')
 if use_engkor_dict=='true':
     try:
         engkor_dict = dict_read(file_engkor_dict)
     except:
-        log('cannot find file %s' % file_engkor_dict)
+        use_engkor_dict = 'false'
+        log(__scriptname__,'cannot find file %s' % file_engkor_dict)
         pass
 
 ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
@@ -131,10 +134,10 @@ def smart_quote(str):
     while spos<epos:
         ipos = str.find('%',spos)
         if ipos == -1:
-            ret += urllib.quote_plus(str[spos:])
+            ret += urllib.quote(str[spos:])
             spos = epos
         else:
-            ret += urllib.quote_plus(str[spos:ipos])
+            ret += urllib.quote(str[spos:ipos])
             spos = ipos
             ipos+=1
             # check '%xx'
@@ -146,13 +149,13 @@ def smart_quote(str):
                         ipos+=1
                         ret+=str[spos:ipos]
                     else:
-                        ret+=urllib.quote_plus(str[spos:ipos])
+                        ret+=urllib.quote(str[spos:ipos])
                 else:
                     ipos+=1
-                    ret+=urllib.quote_plus(str[spos:ipos])
+                    ret+=urllib.quote(str[spos:ipos])
                 spos = ipos
             else:
-                ret+=urllib.quote_plus(str[spos:epos])
+                ret+=urllib.quote(str[spos:epos])
                 spos = epos
     return ret
 
@@ -169,7 +172,7 @@ def get_subpages(query,list_mode=0):
     if item['mansearch']:
         newquery = smart_quote(query)
     else:
-        newquery = urllib.quote_plus(prepare_search_string(query))
+        newquery = smart_quote(prepare_search_string(query))
     # first page
     url = base_page+"/?q=%s" % (newquery)
     while page_count<=max_pages and file_count<max_file_count:
@@ -391,7 +394,9 @@ def search(item):
     #if lastgot == 0 and list_mode != 1:
     #   lastgot = get_subpages(filename)
     if use_engkor_dict=='true' and len(titlename)>0:
-        lastgot = get_subpages(find_dict(titlename))
+        titlename = find_dict(titlename).strip()
+        if len(titlename)>0:
+            lastgot += get_subpages(titlename)
         
 def normalizeString(str):
     return unicodedata.normalize(
