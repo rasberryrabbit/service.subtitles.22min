@@ -396,7 +396,7 @@ def search(item):
     if use_engkor_dict=='true' and len(titlename)>0:
         titlename = find_dict(titlename).strip()
         if len(titlename)>0:
-            lastgot += get_subpages(titlename)
+            lastgot += get_subpages(titlename,list_mode)
         
 def normalizeString(str):
     return unicodedata.normalize(

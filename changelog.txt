@@ -1,3 +1,6 @@
+0.8.8
+- missing season/episode checking on dictionary patched searching.
+
 0.8.7
 - update dictionary.
 
