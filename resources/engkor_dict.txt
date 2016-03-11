@@ -53,3 +53,4 @@ order=오더
 limitless=리미트리스
 hyde=하이드
 game=게임
+112263=11.22.63
