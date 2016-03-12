@@ -220,6 +220,21 @@ def read_url(url):
     rep.close()
     return res
 
+# 디씨 웹페이지의 사용된 파일이면 2를 되돌림.
+link_idno = '\?id=([^\&]+)\&no=([^\&"]+)'
+def check_webfiles(link, pagetxt):
+    res = re.search(link_idno,link)
+    result = 0
+    if res:
+        fid = res.group(1)
+        fno = res.group(2)
+        res2 = re.findall(link_idno, pagetxt)
+        if res2:
+            for idtxt, notxt in res2:
+                if idtxt==fid and notxt==fno:
+                    result+=1
+    return result
+
 # 디씨인사이드의 페이지를 파싱해서 파일의 이름과 다운로드 주소를 얻어냄.
 def get_files(url):
     ret_list = []
@@ -229,6 +244,7 @@ def get_files(url):
     for flink,name in files:
         # 확장자를 인식해서 표시.
         #if check_ext(name)!=-1:
+        if check_webfiles(flink,content_file)<2:
             ret_list.append([url, name, flink])
     return ret_list
     
