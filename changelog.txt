@@ -1,3 +1,6 @@
+0.8.9
+- skip web page files on DC.
+
 0.8.8
 - missing season/episode checking on dictionary patched searching.
 
