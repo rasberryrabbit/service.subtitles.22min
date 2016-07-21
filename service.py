@@ -34,6 +34,11 @@ __profile__ = unicode(xbmc.translatePath(__addon__.getAddonInfo('profile')), 'ut
 __resource__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources', 'lib')), 'utf-8')
 __resource_dict__ = unicode(xbmc.translatePath(os.path.join(__cwd__, 'resources')), 'utf-8')
 __temp__ = unicode(xbmc.translatePath(os.path.join(__profile__, 'temp')), 'utf-8')
+time_script_begin = time.time()
+
+def check_script_time():
+    _curr_time = time.time();
+    return _curr_time - time_script_begin
 
 # prepare cookie url opener
 cookies = cookielib.LWPCookieJar()
@@ -123,7 +128,7 @@ if use_engkor_dict=='true':
         log(__scriptname__,'cannot find file %s' % file_engkor_dict)
         pass
 
-ep_expr = re.compile("(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
+ep_expr = re.compile("[\D\S]+(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
 subtitle_txt = re.compile("\d+\:\d+\:\d+\:")
 sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
@@ -176,7 +181,13 @@ def get_subpages(query,list_mode=0):
     # first page
     url = base_page+"/?q=%s" % (newquery)
     while page_count<=max_pages and file_count<max_file_count:
-        file_count += get_list(url,max_file_count-file_count,list_mode)
+        if check_script_time()>29.5:
+            # log(__scriptname__,"Time Limit Break")
+            break
+        f_count, l_count = get_list(url,max_file_count-file_count,list_mode)
+        file_count += f_count
+        if l_count==0:
+            break
         # next page
         page_count+=1
         url = base_page+"/?q=%s&page=%d" % (newquery,page_count)
@@ -251,7 +262,7 @@ def get_files(url):
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
 def get_files_bun(url):
     ret_list = []
-    file_pattern_bun = "<a class=\"[^\"]+\"\s+href=\"([^\"]+)\"><span class=[^\>]+>[^\<]+</span><i class=[^>]+></i>([^<]+)<"
+    file_pattern_bun = "<a class=\"[^\"]+view_file_download[^\"]+\"\s+href=\"([^\"]+)\">.+<i class=\"[^\"]+fa-download\"></i>([^<]+)<span"
     content_file_bun = read_url(url)
     files_bun = re.findall(file_pattern_bun,content_file_bun)
     for flink,name in files_bun:
@@ -285,54 +296,57 @@ def check_season_episode(str_title, se, ep):
             result = 2
     return result
 
-# 22min.com의 페이지의 내용을 추출해서 디씨인사이드의 링크를 얻어냄. 그리고 파일 다운로드를 호출.
+# 22min.com의 페이지의 내용을 추출해서 링크를 얻어냄. 그리고 링크를 리스트에 추가.
 def get_list(url, limit_file, list_mode):
     search_pattern = "<a class=\"list-group-item subtitle\" href=\"([^\"]+)\" [^>]+>\s+?<div [^>]+>\s+?(.+)?\s+?<span>([^<]+)</span>\s+?<span class="
     content_list = read_url(url)
     result = 0
-    # 자막이 없음을 알리는 페이지를 인식.
-    if content_list.find("<div class=\"alert alert-warning\">")==-1:
-        lists = re.findall(search_pattern,content_list)
-        for link, dummy_vote, title_name in lists:
-            if result<limit_file:
-                link = link.replace("&amp;","&")
-                if link.find("bunyuc.com")!=-1:
-                    list_files = get_files_bun(link)
-                    isbunyuc = True
-                else:
-                    list_files = get_files(link)
-                    isbunyuc = False
-                for furl,name,flink in list_files:
-                    if use_se_ep_check == "true":
-                        if list_mode==1:
-                            ep_check = check_season_episode(title_name,item['season'],item['episode'])
-                            ep_check += check_season_episode(name,item['season'],item['episode'])
-                            if ep_check < 2:
-                                continue
-                    if not isbunyuc:
-                        if check_subtitle_file(furl,flink,name):
-                            name+='.txt'
-                        else:
+    link_count = 0
+    # 링크를 파싱
+    lists = re.findall(search_pattern,content_list)
+    for link, dummy_vote, title_name in lists:
+        if result<limit_file:
+            if check_script_time()>29.5:
+                # log(__scriptname__,"Time Limit Break")
+                break
+            link_count+=1
+            link = link.replace("&amp;","&")
+            if link.find("bunyuc.com")!=-1:
+                list_files = get_files_bun(link)
+                isbunyuc = True
+            else:
+                list_files = get_files(link)
+                isbunyuc = False
+            for furl,name,flink in list_files:
+                if use_se_ep_check == "true":
+                    if list_mode==1:
+                        ep_check = check_season_episode(title_name,item['season'],item['episode'])
+                        ep_check += check_season_episode(name,item['season'],item['episode'])
+                        if ep_check < 2:
                             continue
-                    result+=1
-                    listitem = xbmcgui.ListItem(label          = "Korean",
-                                                label2         = name if use_titlename == "false" else title_name,
-                                                iconImage      = "0",
-                                                thumbnailImage = ""
-                                                )
+                if not isbunyuc:
+                    if check_subtitle_file(furl,flink,name):
+                        name+='.txt'
+                    else:
+                        continue
+                result+=1
+                listitem = xbmcgui.ListItem(label          = "Korean",
+                                            label2         = name if use_titlename == "false" else title_name,
+                                            iconImage      = "0",
+                                            thumbnailImage = ""
+                                            )
 
-                    listitem.setProperty( "sync", "false" )
-                    listitem.setProperty( "hearing_imp", "false" )
-                    listurl = "plugin://%s/?action=download&url=%s&furl=%s&name=%s" % (__scriptid__,
-                                                                                    urllib2.quote(furl),
-                                                                                    urllib2.quote(flink),
-                                                                                    name
-                                                                                    )
+                listitem.setProperty( "sync", "false" )
+                listitem.setProperty( "hearing_imp", "false" )
+                listurl = "plugin://%s/?action=download&url=%s&furl=%s&name=%s" % (__scriptid__,
+                                                                                urllib2.quote(furl),
+                                                                                urllib2.quote(flink),
+                                                                                name
+                                                                                )
 
-                    xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=listurl,listitem=listitem,isFolder=False)
-    else:
-        result = 0
-    return result
+                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=listurl,listitem=listitem,isFolder=False)
+
+    return result, link_count
 
 # 디시인사이드 파일 형식 체크
 def check_subtitle_file(url,furl,name):
