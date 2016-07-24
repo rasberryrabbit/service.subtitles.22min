@@ -21,6 +21,7 @@ import gzip
 import zlib
 import StringIO
 import cookielib
+import socket
 
 __addon__ = xbmcaddon.Addon()
 __author__ = __addon__.getAddonInfo('author')
@@ -311,12 +312,19 @@ def get_list(url, limit_file, list_mode):
                 break
             link_count+=1
             link = link.replace("&amp;","&")
-            if link.find("bunyuc.com")!=-1:
-                list_files = get_files_bun(link)
-                isbunyuc = True
-            else:
-                list_files = get_files(link)
-                isbunyuc = False
+            try:
+                if link.find("bunyuc.com")!=-1:
+                    list_files = get_files_bun(link)
+                    isbunyuc = True
+                else:
+                    list_files = get_files(link)
+                    isbunyuc = False
+            except socket.timeout:
+                log(__scriptname__,"socket time out")
+                continue
+            except Exception as e:
+                raise
+
             for furl,name,flink in list_files:
                 if use_se_ep_check == "true":
                     if list_mode==1:
@@ -330,7 +338,12 @@ def get_list(url, limit_file, list_mode):
                     else:
                         continue
                 result+=1
-                listitem = xbmcgui.ListItem(label          = "Korean",
+                labelf="[KR]"
+                if isbunyuc==True:
+                    labelf+="[BF]"
+                else:
+                    labelf+="[DC]"
+                listitem = xbmcgui.ListItem(label          = labelf,
                                             label2         = name if use_titlename == "false" else title_name,
                                             iconImage      = "0",
                                             thumbnailImage = ""
