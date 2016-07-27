@@ -8,4 +8,5 @@
    <setting id="use_se_ep_check" type="bool" label="30006" default="true"/>
    <setting id="use_engkor_dict" type="bool" label="30007" default="true"/>
    <setting id="file_engkor_dict" type="file" label="30008" value=""/>
+   <setting id="enable_bunyuc" type="bool" label="30009" default="false"/>
 </settings>

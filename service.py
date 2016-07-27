@@ -92,6 +92,7 @@ use_engkeyhan = __addon__.getSetting("use_engkeyhan")
 use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 use_engkor_dict = __addon__.getSetting("use_engkor_dict")
 file_engkor_dict = __addon__.getSetting("file_engkor_dict")
+enable_bunyuc = __addon__.getSetting("enable_bunyuc")
 engkor_dict = {}
 
 def dict_read(filename):
@@ -314,6 +315,8 @@ def get_list(url, limit_file, list_mode):
             link = link.replace("&amp;","&")
             try:
                 if link.find("bunyuc.com")!=-1:
+                    if enable_bunyuc == 'false':
+                        continue
                     list_files = get_files_bun(link)
                     isbunyuc = True
                 else:
