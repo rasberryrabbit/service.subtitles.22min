@@ -404,17 +404,65 @@ def download_file(url,furl,name):
         local_file_handle.close()
     subtitle_list.append(local_temp_file)
     return subtitle_list
+    
+class MyClass(xbmcgui.WindowDialog):
+  def __init__(self, image_url):
+    image = xbmcgui.ControlImage(160, 60, 200, 80, image_url)
+    self.addControl(image)
+    # this shows the window on the screen
+    self.show()
+
+  def onAction(self, action):
+    # the window will be closed with any key
+    self.close()
+
 
 # 번역 포럼에서 파일을 다운로드
 def download_file_bun(url,furl,name):
+    g5_cap = "http://bunyuc.com/plugin/kcaptcha"
+    g5_cap_ss = g5_cap+ "/kcaptcha_session.php"
+    g5_cap_image = g5_cap + "/kcaptcha_image.php?t="
+    downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%d"
+    wrid_patt = "wr_id=([^\&]+)"
+    fileno_patt = "no=([^\&]+)"
+    # init
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
+    local_image_file = os.path.join(__temp__.encode('utf-8'), "captcha.jpg")
+    opener2.addheaders = [('User-Agent',user_agent)]
     # Get cookie
     req1 = urllib2.Request(url,headers={'User-Agent': user_agent})
     res1 = opener2.open(req1)
-    # Download File
+    # 캡차 코드를 다운로드, 160x60
+    req5 = urllib2.Request(g5_cap_ss,headers={"Referer": url})
+    rex5 = opener2.open(req5)
+    req4 = urllib2.Request(g5_cap_image + "%d" %(time.time()),headers={"Referer": url})    
+    rex4 = opener2.open(req4)
+    fimg = open(local_image_file,"wb")
+    fimg.write(rex4.read())
+    fimg.close()
+    #show image
+    mydisp = MyClass(local_image_file)
+    mydisp.doModal()
+    del mydisp
+    dialog = xbmcgui.Dialog()
+    val = dialog.input("Input captcha", type=xbmcgui.INPUT_ALPHANUM).strip()
+    if val=='':
+        sys.exit(0)
+    # download file
+    subfile = re.search(fileno_patt,furl)
+    if subfile:
+        subfileno = subfile.group(1)
+    else:
+        subfileno = "0"
+    wr_id = re.search(wrid_patt,furl).group(1)
+    params = urllib.urlencode({'captcha_key':val})
+    req2 = urllib2.Request(downpost %(wr_id,subfileno),data=params,headers={"Content-type": "application/x-www-form-urlencoded","Referer": url})
+    res2 = opener.open(req2)
+    """
     req2 = urllib2.Request(furl,headers={'User-Agent': user_agent})
     res2 = opener2.open(req2)
+    """
     local_file_handle = open( local_temp_file, "wb" )
     local_file_handle.write(res2.read())
     local_file_handle.close()
