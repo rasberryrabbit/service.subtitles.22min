@@ -460,7 +460,7 @@ def download_file_bun(url,furl,name):
     wr_id = re.search(wrid_patt,furl).group(1)
     params = urllib.urlencode({'captcha_key':val})
     req2 = urllib2.Request(downpost %(wr_id,subfileno),data=params,headers={"Content-type": "application/x-www-form-urlencoded","Referer": url})
-    res2 = opener.open(req2)
+    res2 = opener2.open(req2)
     """
     req2 = urllib2.Request(furl,headers={'User-Agent': user_agent})
     res2 = opener2.open(req2)

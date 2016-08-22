@@ -1,3 +1,6 @@
+0.8.14
+- fix 22min parser and downloader.
+
 0.8.12
 - option for bunyuc crawling.
 
