@@ -409,14 +409,15 @@ def download_file(url,furl,name):
     
 class MyClass(xbmcgui.WindowDialog):
   def __init__(self, image_url):
-    image = xbmcgui.ControlImage(160, 60, 200, 80, image_url)
+    image = xbmcgui.ControlImage(20, 10, 200, 80, image_url)
     self.addControl(image)
     # this shows the window on the screen
     self.show()
 
   def onAction(self, action):
     # the window will be closed with any key
-    self.close()
+    #self.close()
+    pass
 
 
 # 번역 포럼에서 파일을 다운로드
@@ -445,10 +446,10 @@ def download_file_bun(url,furl,name):
     fimg.close()
     #show image
     mydisp = MyClass(local_image_file)
-    mydisp.doModal()
-    del mydisp
     dialog = xbmcgui.Dialog()
     val = dialog.input("Input captcha", type=xbmcgui.INPUT_ALPHANUM).strip()
+    mydisp.close()
+    del mydisp
     if val=='':
         sys.exit(0)
     # download file
