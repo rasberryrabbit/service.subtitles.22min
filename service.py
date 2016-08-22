@@ -422,7 +422,7 @@ def download_file_bun(url,furl,name):
     g5_cap = "http://bunyuc.com/plugin/kcaptcha"
     g5_cap_ss = g5_cap+ "/kcaptcha_session.php"
     g5_cap_image = g5_cap + "/kcaptcha_image.php?t="
-    downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%d"
+    downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%s"
     wrid_patt = "wr_id=([^\&]+)"
     fileno_patt = "no=([^\&]+)"
     # init
