@@ -263,17 +263,19 @@ def get_files(url):
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
 def get_files_bun(url):
-    ret_list = []
-    file_pattern_bun = "<a class=\"[^\"]+view_file_download[^\"]+\"\s+href=\"([^\"]+)\">.+<i class=\"[^\"]+fa-download\"></i>([^<]+)<span"
+    bellpoint = "포인트 차감"
+    ret_list = []    
+    file_pattern_bun = "<a class=\"[^\"]+view_file_download[^\"]+\"[^>]+\s+href=\"([^\"]+)\">.+<i class=\"[^\"]+\"></i>([^<]+)<"
     content_file_bun = read_url(url)
-    files_bun = re.findall(file_pattern_bun,content_file_bun)
-    for flink,name in files_bun:
-        # 확장자를 인식해서 표시
-        epos = check_ext_pos(name)
-        if epos!=-1:
-            name = name[:epos+4]
-            flink = flink.replace("&amp;","&")
-            ret_list.append([url, name, flink])
+    if content_file_bun.find(bellpoint)==-1:    
+        files_bun = re.findall(file_pattern_bun,content_file_bun)
+        for flink,name in files_bun:
+            # 확장자를 인식해서 표시
+            epos = check_ext_pos(name)
+            if epos!=-1:
+                name = name[:epos+4]
+                flink = flink.replace("&amp;","&")
+                ret_list.append([url, name, flink])
     return ret_list    
 
 def check_season_episode(str_title, se, ep):
