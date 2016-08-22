@@ -1,3 +1,6 @@
+0.8.15
+-fix dialog appearence.
+
 0.8.14
 - fix 22min parser and downloader.
 
