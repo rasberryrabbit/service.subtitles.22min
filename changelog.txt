@@ -1,3 +1,6 @@
+0.8.16
+- login function for bunyuc forum. not tested yet.
+
 0.8.15
 -fix dialog appearence.
 
