@@ -93,6 +93,8 @@ use_se_ep_check = __addon__.getSetting("use_se_ep_check")
 use_engkor_dict = __addon__.getSetting("use_engkor_dict")
 file_engkor_dict = __addon__.getSetting("file_engkor_dict")
 enable_bunyuc = __addon__.getSetting("enable_bunyuc")
+bunyuc_login_id = __addon__.getSetting("bunyuc_id")
+bunyuc_login_pass = __addon__.getSetting("bunyuc_pass")
 engkor_dict = {}
 
 def dict_read(filename):
@@ -428,11 +430,20 @@ def download_file_bun(url,furl,name):
     downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%s"
     wrid_patt = "wr_id=([^\&]+)"
     fileno_patt = "no=([^\&]+)"
+    login_url = "http://bunyuc.com/bbs/login_check.php"
     # init
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
     local_image_file = os.path.join(__temp__.encode('utf-8'), "captcha.jpg")
     opener2.addheaders = [('User-Agent',user_agent)]
+    # login
+    if bunyuc_login_id!="" and bunyuc_login_pass!="":
+        login_data = urllib.urlencode({'url':'http://bunyuc.com/','mb_id':bunyuc_login_id,'mb_password':bunyuc_login_pass})
+        req_login = urllib2.Request(login_url,data=login_data,headers={"Content-type": "application/x-www-form-urlencoded","Referer": url})
+        try:
+            rex_login = opener2.open(req_login)
+        except:
+            pass
     # Get cookie
     req1 = urllib2.Request(url,headers={'User-Agent': user_agent})
     res1 = opener2.open(req1)

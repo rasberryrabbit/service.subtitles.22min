@@ -8,5 +8,7 @@
     <string id="30006">Checking season/episode</string>
     <string id="30007">Use English to Korean Dictionary</string>
     <string id="30008">English to Korean Dictionary</string>
-    <string id="30009">Crawling bunyuc forum</string>    
+    <string id="30009">Crawling bunyuc forum</string>
+    <string id="30010">bunyuc forum ID</string>
+    <string id="30011">bunyuc forum Password</string>
 </strings>
