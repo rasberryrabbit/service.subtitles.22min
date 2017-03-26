@@ -1,3 +1,6 @@
+0.8.17
+- allow smi and srt only on DC site.
+
 0.8.16
 - login function for bunyuc forum. not tested yet.
 
