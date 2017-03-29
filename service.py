@@ -261,10 +261,10 @@ def get_files(url):
     content_file = read_url(url)
     files = re.findall(file_pattern,content_file)
     for flink,name in files:
-        # 확장자를 인식해서 표시.
-        #if check_ext(name)!=-1:
         if check_webfiles(flink,content_file)<2:
-            ret_list.append([url, name, flink])
+            # 확장자를 인식해서 표시.
+            if check_ext_pos(name)!=-1 or name.lower().find('.jpg')!=-1 or name.lower().find('.png')!=-1:
+                ret_list.append([url, name, flink])
     return ret_list
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
@@ -307,7 +307,7 @@ def check_season_episode(str_title, se, ep):
     return result
     
 def stripextjpg(s):
-    rre = re.compile('\.jpg|\.txt|\.smi|\.srt',re.IGNORECASE)
+    rre = re.compile('\.jpg|\.png|\.txt|\.smi|\.srt',re.IGNORECASE)
     return rre.sub('',s)
 
 # 22min.com의 페이지의 내용을 추출해서 링크를 얻어냄. 그리고 링크를 리스트에 추가.
