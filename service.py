@@ -305,6 +305,10 @@ def check_season_episode(str_title, se, ep):
         if int(new_episode)==int(ep):
             result = 2
     return result
+    
+def stripextjpg(s):
+    rre = re.compile('\.jpg|\.txt|\.smi|\.srt',re.IGNORECASE)
+    return rre.sub('',s)
 
 # 22min.com의 페이지의 내용을 추출해서 링크를 얻어냄. 그리고 링크를 리스트에 추가.
 def get_list(url, limit_file, list_mode):
@@ -344,10 +348,7 @@ def get_list(url, limit_file, list_mode):
                         if ep_check < 2:
                             continue
                 if not isbunyuc:
-                    if check_subtitle_file(furl,flink,name):
-                        name+='.txt'
-                    else:
-                        continue
+                    name=stripextjpg(name)
                 result+=1
                 labelf="[KR]"
                 if isbunyuc==True:
