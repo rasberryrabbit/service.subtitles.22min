@@ -398,7 +398,7 @@ def download_file(url,furl,name):
     req = urllib2.urlopen(urllib2.Request(furl,headers={'Referer': url, 'User-Agent': user_agent}))
     # check content on txt and jpg file
     subbuf = req.read()
-    subbufchk = subbuf[:30]
+    subbufchk = subbuf[:500]
     if subbufchk.upper().find("<SAMI")!=-1:
         local_temp_file += '.smi'
     else:
