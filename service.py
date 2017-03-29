@@ -261,7 +261,7 @@ def get_files(url):
     content_file = read_url(url)
     files = re.findall(file_pattern,content_file)
     for flink,name in files:
-        if check_webfiles(flink,content_file)<2:
+        #if check_webfiles(flink,content_file)<2:
             # 확장자를 인식해서 표시.
             if check_ext_pos(name)!=-1 or name.lower().find('.jpg')!=-1 or name.lower().find('.png')!=-1:
                 ret_list.append([url, name, flink])
