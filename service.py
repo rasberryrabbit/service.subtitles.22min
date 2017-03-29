@@ -136,6 +136,10 @@ ep_expr = re.compile("[\D\S]+(\d{1,2})(\s+)?[^\d\s\.]+(\d{1,3})")
 subtitle_txt = re.compile("\d+\:\d+\:\d+\:")
 sub_ext_str = [".smi",".srt",".sub",".ssa",".ass",".txt"]
 
+def CheckSUBIsSRT(s):
+    m = re.search('\d+\s+\d+\:\d+\:[0-9\,\.]+\s+\-\-\>\s+\d+\:\d+\:[0-9\,\.]+\d+',s)
+    return m
+
 def smart_quote(str):
     ret = ''
     spos = 0
@@ -398,7 +402,8 @@ def download_file(url,furl,name):
     if subbufchk.upper().find("<SAMI")!=-1:
         local_temp_file += '.smi'
     else:
-        local_temp_file += '.srt'
+        if CheckSUBIsSRT(subbufchk):
+            local_temp_file += '.srt'            
     local_file_handle = open( local_temp_file, "wb" )
     local_file_handle.write(subbuf)
     local_file_handle.close()

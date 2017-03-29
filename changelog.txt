@@ -1,3 +1,6 @@
+0.8.18
+- clarify srt sub detection.
+
 0.8.17
 - allow smi and srt only on DC site.
 
