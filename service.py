@@ -269,9 +269,9 @@ def get_files(url):
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
 def get_files_bun(url):
-    bellpoint = "포인트 차감"
+    bellpoint = "덕력 차감"
     ret_list = []    
-    file_pattern_bun = "<a class=\"[^\"]+view_file_download[^\"]+\"[^>]+\s+href=\"([^\"]+)\">.+<i class=\"[^\"]+\"></i>([^<]+)<"
+    file_pattern_bun = "<a\s+class=\"[^\"]+\"\s+href=\"([^\"]+)\"><span\s+class=\"[^\"]+\"><i\s+class=\"[^\"]+\"></i>[^<]+</span><i\s+class=\"[^\"]+\"></i>([^<]+)<"
     content_file_bun = read_url(url)
     if content_file_bun.find(bellpoint)==-1:    
         files_bun = re.findall(file_pattern_bun,content_file_bun)
