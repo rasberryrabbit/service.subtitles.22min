@@ -269,11 +269,9 @@ def get_files(url):
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
 def get_files_bun(url):
-    bellpoint = "덕력 차감"
     ret_list = []    
     file_pattern_bun = "<a\s+class=\"[^\"]+\"\s+href=\"([^\"]+)\"><span\s+class=\"[^\"]+\"><i\s+class=\"[^\"]+\"></i>[^<]+</span><i\s+class=\"[^\"]+\"></i>([^<]+)<"
     content_file_bun = read_url(url)
-    if content_file_bun.find(bellpoint)==-1:    
         files_bun = re.findall(file_pattern_bun,content_file_bun)
         for flink,name in files_bun:
             # 확장자를 인식해서 표시
@@ -429,7 +427,8 @@ def download_file_bun(url,furl,name):
     g5_cap = "http://bunyuc.com/plugin/kcaptcha"
     g5_cap_ss = g5_cap+ "/kcaptcha_session.php"
     g5_cap_image = g5_cap + "/kcaptcha_image.php?t="
-    downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%s"
+    # downpost_old = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%s"
+    downpost = "http://bunyuc.com/bbs/download.php?bo_table=jamakboard&wr_id=%s&no=%s&ds=1&js=on"
     wrid_patt = "wr_id=([^\&]+)"
     fileno_patt = "no=([^\&]+)"
     login_url = "http://bunyuc.com/bbs/login_check.php"
