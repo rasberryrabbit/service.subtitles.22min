@@ -272,14 +272,14 @@ def get_files_bun(url):
     ret_list = []    
     file_pattern_bun = "<a\s+class=\"[^\"]+\"\s+href=\"([^\"]+)\"><span\s+class=\"[^\"]+\"><i\s+class=\"[^\"]+\"></i>[^<]+</span><i\s+class=\"[^\"]+\"></i>([^<]+)<"
     content_file_bun = read_url(url)
-        files_bun = re.findall(file_pattern_bun,content_file_bun)
-        for flink,name in files_bun:
-            # 확장자를 인식해서 표시
-            epos = check_ext_pos(name)
-            if epos!=-1:
-                name = name[:epos+4]
-                flink = flink.replace("&amp;","&")
-                ret_list.append([url, name, flink])
+    files_bun = re.findall(file_pattern_bun,content_file_bun)
+    for flink,name in files_bun:
+        # 확장자를 인식해서 표시
+        epos = check_ext_pos(name)
+        if epos!=-1:
+            name = name[:epos+4]
+            flink = flink.replace("&amp;","&")
+            ret_list.append([url, name, flink])
     return ret_list    
 
 def check_season_episode(str_title, se, ep):
