@@ -456,7 +456,7 @@ def download_file_bun(url,furl,name):
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
     local_image_file = make_imgname(__temp__.encode('utf-8'), "captcha",".jpg")
-    remove_temp_file(__temp__.encode('utf-8'),"captcha",".jpg",30)
+    remove_temp_file(__temp__.encode('utf-8'),"captcha",".jpg",100)
     opener2.addheaders = [('User-Agent',user_agent)]
     # login
     if bunyuc_login_id!="" and bunyuc_login_pass!="":
