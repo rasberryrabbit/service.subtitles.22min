@@ -51,27 +51,30 @@ handlers = [
 opener2 = urllib2.build_opener(*handlers)
 
 def log(module, msg):
-    xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'),xbmc.LOGERROR)
+    xbmc.log((u"### [%s] - %s" % (module, msg,)).encode('utf-8'),level=xbmc.LOGERROR)
 
-# remove file and dir with 30 days before / now after time
+# remove file and dir with 365 days before / now after time
 def clear_tempdir(strpath):
-    if xbmcvfs.exists(strpath):
+    if sys.platform.startswith('win'):
+        workpath=strpath
+    else:
+        workpath=strpath.encode('utf-8')
+
+    if os.path.exists(workpath):
         try:
-            low_time = time.mktime((datetime.date.today() - datetime.timedelta(days=15)).timetuple())
+            low_time = time.mktime((datetime.date.today() - datetime.timedelta(days=365)).timetuple())
             now_time = time.time()
-            for file_name in xbmcvfs.listdir(strpath)[1]:
-                if sys.platform.startswith('win'):
-                    full_path = os.path.join(strpath, file_name)
-                else:
-                    full_path = os.path.join(strpath.encode('utf-8'), file_name)
-                cfile_time = os.stat(full_path).st_mtime
-                if low_time >= cfile_time or now_time <= cfile_time:
+            for file_name in os.listdir(workpath):
+                full_path = os.path.join(workpath, file_name)
+                cfile_time = os.path.getmtime(full_path)
+                if low_time > cfile_time:
                     if os.path.isdir(full_path):
                         shutil.rmtree(full_path)
                     else:
                         os.remove(full_path)
-        except:
-            log(__scriptname__,"error on cleaning temp dir")
+                    #log(__scriptname__,"delete - "+full_path.decode('utf-8'))
+        except Exception as e:
+            log(__scriptname__,str(e))
 
 clear_tempdir(__temp__)
 
@@ -453,7 +456,7 @@ def download_file_bun(url,furl,name):
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
     local_image_file = make_imgname(__temp__.encode('utf-8'), "captcha",".jpg")
-    remove_temp_file(__temp__.encode('utf-8'),"captcha",".jpg",10)
+    remove_temp_file(__temp__.encode('utf-8'),"captcha",".jpg",30)
     opener2.addheaders = [('User-Agent',user_agent)]
     # login
     if bunyuc_login_id!="" and bunyuc_login_pass!="":
