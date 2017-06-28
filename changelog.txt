@@ -1,3 +1,6 @@
+0.8.24
+- fix clearing temp foler and limit captcha image files.
+
 0.8.23
 - fix parsing and download.
 
