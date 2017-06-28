@@ -420,7 +420,24 @@ class MyClass(xbmcgui.WindowDialog):
     # the window will be closed with any key
     #self.close()
     pass
+    
+def remove_temp_file(folder,sstart,sext,limit):
+    buf=[]
+    for file in os.listdir(folder):
+        if file.startswith(sstart) and file.endswith(sext):
+            buf.append(os.path.join(folder,file))
+    i=len(buf)
+    if i>limit:
+        buf.sort
+        i-=limit
+        for item in buf:
+            os.remove(item)
+            i-=1
+            if i==0:
+                break
 
+def make_imgname(dir,base,ext):
+    return os.path.join(dir,base+time.strftime("%Y%m%d%H%M%S")+ext)
 
 # 번역 포럼에서 파일을 다운로드
 def download_file_bun(url,furl,name):
@@ -435,7 +452,8 @@ def download_file_bun(url,furl,name):
     # init
     subtitle_list = []
     local_temp_file = os.path.join(__temp__.encode('utf-8'), name)
-    local_image_file = os.path.join(__temp__.encode('utf-8'), "captcha.jpg")
+    local_image_file = make_imgname(__temp__.encode('utf-8'), "captcha",".jpg")
+    remove_temp_file(__temp__.encode('utf-8'),"captcha",".jpg",10)
     opener2.addheaders = [('User-Agent',user_agent)]
     # login
     if bunyuc_login_id!="" and bunyuc_login_pass!="":
