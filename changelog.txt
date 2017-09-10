@@ -1,3 +1,6 @@
+0.8.25
+- fix season episode checking.
+
 0.8.24
 - fix clearing temp foler and limit captcha image files.
 
