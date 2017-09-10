@@ -289,8 +289,6 @@ def check_season_episode(str_title, se, ep):
     r = re.findall('(\D+)(\d+)',str_title)
     lmatch = 0
     if r:
-        numse = int(se)
-        numep = int(ep)
         numbers = []
         for mdig in r:
             try:
@@ -299,6 +297,12 @@ def check_season_episode(str_title, se, ep):
                 newnum=0
             numbers.append(newnum)
         lnum = -1
+        if se=="":
+            se="0"
+        if ep=="":
+            ep="0"
+        numse = int(se)
+        numep = int(ep)
         for num in numbers[::-1]:
             if lnum != -1:
                 if num == numse:
