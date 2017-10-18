@@ -283,7 +283,21 @@ def get_files_bun(url):
             name = name[:epos+4]
             flink = flink.replace("&amp;","&")
             ret_list.append([url, name, flink])
-    return ret_list    
+    return ret_list
+    
+def get_files_me0e(url):
+    ret_list = []    
+    file_pattern_me0e = "<a\s+class.+href=\"([^\"]+)\"\s+title=\"([^\"]+)\"[^>]+>"
+    content_file_me0e = read_url(url)
+    files_me0e = re.findall(file_pattern_me0e,content_file_me0e)
+    for flink,name in files_me0e:
+        # 확장자를 인식해서 표시
+        epos = check_ext_pos(name)
+        if epos!=-1:
+            #name = name[:epos+4]
+            flink = flink.replace("&amp;","&")
+            ret_list.append([url, name, flink])
+    return ret_list
 
 def check_season_episode(str_title, se, ep):
     r = re.findall('(\D+)(\d+)',str_title)
@@ -337,6 +351,11 @@ def get_list(url, limit_file, list_mode):
                     if enable_bunyuc == 'false':
                         continue
                     list_files = get_files_bun(link)
+                    isbunyuc = True
+                elif link.find("me0e.com")!=-1:
+                    if enable_bunyuc == 'false':
+                        continue
+                    list_files = get_files_me0e(link)
                     isbunyuc = True
                 else:
                     list_files = get_files(link)
@@ -529,7 +548,7 @@ def search(item):
         lastgot = get_subpages(titlename)
     #if lastgot == 0 and list_mode != 1:
     #   lastgot = get_subpages(filename)
-    if use_engkor_dict=='true' and len(titlename)>0:
+    if lastgot==0 and use_engkor_dict=='true' and len(titlename)>0:
         titlename = find_dict(titlename).strip()
         if len(titlename)>0:
             lastgot += get_subpages(titlename,list_mode)
