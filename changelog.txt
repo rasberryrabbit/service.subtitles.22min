@@ -1,3 +1,6 @@
+0.8.27
+- fix crawler for DC
+
 0.8.26
 - add new site parser
 

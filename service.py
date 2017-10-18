@@ -22,6 +22,8 @@ import zlib
 import StringIO
 import cookielib
 import socket
+import httplib
+from urlparse import urlparse
 
 __addon__ = xbmcaddon.Addon()
 __author__ = __addon__.getAddonInfo('author')
@@ -241,6 +243,16 @@ def read_url(url):
     res = decode_content(rep)
     rep.close()
     return res
+    
+def read_url2(url):
+    urlinfo = urlparse(url)
+    conn = httplib.HTTPConnection(urlinfo.netloc)
+    headers = { "User-Agent" : user_agent, "Accept": "text/plain" }
+    conn.request("GET",urlinfo.path+"?"+urlinfo.query,urlinfo.params,headers)
+    rsp = conn.getresponse()
+    res = rsp.read()
+    conn.close()
+    return res
 
 # 디씨 웹페이지의 사용된 파일이면 2를 되돌림.
 link_idno = '\?id=([^\&]+)\&no=([^\&"]+)'
@@ -261,7 +273,7 @@ def check_webfiles(link, pagetxt):
 def get_files(url):
     ret_list = []
     file_pattern = "<li class=\"[^b][^\"]+\"><a href=\"([^\"]+)\">([^<]+)<"
-    content_file = read_url(url)
+    content_file = read_url2(url)
     files = re.findall(file_pattern,content_file)
     for flink,name in files:
         #if check_webfiles(flink,content_file)<2:
