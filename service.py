@@ -393,8 +393,9 @@ def get_list(url, limit_file, list_mode):
                     labelf+="[BF]"
                 else:
                     labelf+="[DC]"
+                labelname = name if use_titlename == "false" else title_name+" | "+name
                 listitem = xbmcgui.ListItem(label          = labelf,
-                                            label2         = name if use_titlename == "false" else title_name,
+                                            label2         = labelname,
                                             iconImage      = "0",
                                             thumbnailImage = ""
                                             )
