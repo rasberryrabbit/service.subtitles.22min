@@ -280,6 +280,14 @@ def get_files(url):
             # 확장자를 인식해서 표시.
             if check_ext_pos(name)!=-1 or name.lower().find('.jpg')!=-1 or name.lower().find('.png')!=-1:
                 ret_list.append([url, name, flink])
+    # get naver link
+    link_pattern = "<a\s+href=\"([^\"]+)\"\s+target=\"_blank\"\s+class=\"tx\-link\">"
+    files = re.findall(link_pattern,content_file)
+    for link in files:
+        if link.find("blog.naver.com")!=-1:
+            ret_naver = get_files_naver(link)
+            for name, flink in ret_naver:
+                ret_list.append([link, name, flink])
     return ret_list
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
@@ -310,6 +318,22 @@ def get_files_me0e(url):
             flink = flink.replace("&amp;","&")
             ret_list.append([url, name, flink])
     return ret_list
+    
+def get_files_naver(url):
+    ret_naver = []
+    frame_pattern="<frame\s+id=\"mainFrame\"[^>]+\s+src=\"([^\"]+)\""
+    blog_addr = "http://blog.naver.com"
+    content_page = read_url2(url)
+    blogframes = re.findall(frame_pattern,content_page)
+    item_pattern = "\'encodedAttachFileUrl\'\: \'([^\,]+)\'\,"
+    for link in blogframes:
+        content_text = read_url2(blog_addr+link)
+        flist = re.findall(item_pattern,content_text)
+        for flink in flist:
+            pos = flink.rfind('/')
+            if pos!=-1:
+                ret_naver.append([flink[pos+1:], flink])
+    return ret_naver
 
 def check_season_episode(str_title, se, ep):
     r = re.findall('(\D+)(\d+)',str_title)
