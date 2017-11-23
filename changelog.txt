@@ -1,3 +1,6 @@
+0.8.28
+- add blog crawler
+
 0.8.27
 - fix crawler for DC
 
@@ -8,7 +11,7 @@
 - fix season episode checking.
 
 0.8.24
-- fix clearing temp foler and limit captcha image files.
+- fix clearing temp folder and limit captcha image files.
 
 0.8.23
 - fix parsing and download.
