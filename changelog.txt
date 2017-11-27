@@ -1,3 +1,6 @@
+0.8.29
+- improve crawler
+
 0.8.28
 - add blog crawler
 
