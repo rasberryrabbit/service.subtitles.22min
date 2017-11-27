@@ -288,6 +288,15 @@ def get_files(url):
             ret_naver = get_files_naver(link)
             for name, flink in ret_naver:
                 ret_list.append([link, name, flink])
+        else:
+            content_file = read_url2(link)
+            fwdlink_pattern = "<frame\s+[^>]+\s+src=\'([^\']+)\'"
+            framedat = re.findall(fwdlink_pattern,content_file)
+            for framelink in framedat:
+                if framelink.find("blog.naver.com")!=-1:
+                    ret_naver = get_files_naver(framelink)
+                    for name, flink in ret_naver:
+                        ret_list.append([framelink, name, flink])
     return ret_list
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
