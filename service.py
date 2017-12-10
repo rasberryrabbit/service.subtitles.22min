@@ -101,6 +101,7 @@ enable_bunyuc = __addon__.getSetting("enable_bunyuc")
 bunyuc_login_id = __addon__.getSetting("bunyuc_id")
 bunyuc_login_pass = __addon__.getSetting("bunyuc_pass")
 engkor_dict = {}
+use_convertsrt = __addon__.getSetting("use_convertsrt")
 
 def dict_read(filename):
     dict = {}
@@ -463,6 +464,39 @@ def check_subtitle_file(url,furl,name):
             ret = False
             pass
     return ret
+    
+def smitosrt(context):
+    if re.search("<sami>",context,re.IGNORECASE):
+        tag = re.compile("<sync\s+([^>]+)>",re.IGNORECASE)
+        tm = re.compile("start\=(\d+|)",re.IGNORECASE)
+        rbuf = ""
+        index = 0
+        lastpos = 0
+        for match in tag.finditer(context):
+            tline = tm.search(match.group(1))
+            mili = tline.group(1)
+            if mili!="":
+                cctime = int(mili)
+            if index>0:
+                try:
+                    temp = context[lastpos:match.start()].decode('utf-8')
+                except:
+                    temp = context[lastpos:match.start()]                
+                temp = re.sub("<p(\s+[^>]+|)>","",temp,0,re.IGNORECASE)
+                rbuf += str(index)+"\n"
+                rbuf += str(datetime.timedelta(milliseconds=lasttime))[:11].replace('.',',') +" --> "+str(datetime.timedelta(milliseconds=cctime))[:11].replace('.',',')+"\n"
+                temp = re.sub("\n","",temp)
+                temp = re.sub("&nbsp;"," ", temp, flags=re.IGNORECASE)
+                temp = re.sub("^<br>","",temp, flags=re.IGNORECASE)
+                temp = re.sub("<br>","\n",temp, flags=re.IGNORECASE).encode('utf-8')
+                rbuf += temp+"\n"
+                rbuf += "\n"
+            lasttime = cctime
+            lastpos = match.end()
+            index+=1
+    else:
+        rbuf=context
+    return rbuf
 
 # 디씨인사이드 사이트에서 파일을 다운로드.
 def download_file(url,furl,name):
@@ -473,7 +507,11 @@ def download_file(url,furl,name):
     subbuf = req.read()
     subbufchk = subbuf[:500]
     if subbufchk.upper().find("<SAMI")!=-1:
-        local_temp_file += '.smi'
+        if use_convertsrt != "false":
+            subbuf = smitosrt(subbuf)
+            local_temp_file += '.srt'
+        else:
+            local_temp_file += '.smi'
     else:
         if CheckSUBIsSRT(subbufchk):
             local_temp_file += '.srt'            
