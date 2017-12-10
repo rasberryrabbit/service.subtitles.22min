@@ -273,6 +273,7 @@ def check_webfiles(link, pagetxt):
 # 디씨인사이드의 페이지를 파싱해서 파일의 이름과 다운로드 주소를 얻어냄.
 def get_files(url):
     ret_list = []
+    r_isbunyuc = False
     file_pattern = "<li class=\"[^b][^\"]+\"><a href=\"([^\"]+)\">([^<]+)<"
     content_file = read_url2(url)
     files = re.findall(file_pattern,content_file)
@@ -286,6 +287,7 @@ def get_files(url):
     files = re.findall(link_pattern,content_file)
     for link in files:
         if link.find("blog.naver.com")!=-1:
+            r_isbunyuc = True
             ret_naver = get_files_naver(link)
             for name, flink in ret_naver:
                 ret_list.append([link, name, flink])
@@ -295,10 +297,11 @@ def get_files(url):
             framedat = re.findall(fwdlink_pattern,content_file)
             for framelink in framedat:
                 if framelink.find("blog.naver.com")!=-1:
+                    r_isbunyuc = True
                     ret_naver = get_files_naver(framelink)
                     for name, flink in ret_naver:
                         ret_list.append([framelink, name, flink])
-    return ret_list
+    return ret_list, r_isbunyuc
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
 def get_files_bun(url):
@@ -404,8 +407,8 @@ def get_list(url, limit_file, list_mode):
                     list_files = get_files_me0e(link)
                     isbunyuc = True
                 else:
-                    list_files = get_files(link)
-                    isbunyuc = False
+                    list_files, isbunyuc = get_files(link)
+                    #isbunyuc = False
             except socket.timeout:
                 log(__scriptname__,"socket time out")
                 continue
