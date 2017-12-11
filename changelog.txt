@@ -1,3 +1,6 @@
+0.8.30
+- add smi to srt conversion
+
 0.8.29
 - improve crawler
 
