@@ -467,7 +467,14 @@ def check_subtitle_file(url,furl,name):
             ret = False
             pass
     return ret
-    
+
+def milistotime(milis):
+    if milis==0:
+        rtime="0:00:00,000"
+    else:
+        rtime=str(datetime.timedelta(milliseconds=milis))[:-3].replace('.',',')
+    return rtime
+
 def smitosrt(context):
     if re.search("<sami>",context,re.IGNORECASE):
         tag = re.compile("<sync\s+([^>]+)>",re.IGNORECASE)
@@ -484,10 +491,10 @@ def smitosrt(context):
                 try:
                     temp = context[lastpos:match.start()].decode('utf-8')
                 except:
-                    temp = context[lastpos:match.start()]                
+                    temp = context[lastpos:match.start()]
                 temp = re.sub("<p(\s+[^>]+|)>","",temp,0,re.IGNORECASE)
                 rbuf += str(index)+"\n"
-                rbuf += str(datetime.timedelta(milliseconds=lasttime))[:11].replace('.',',') +" --> "+str(datetime.timedelta(milliseconds=cctime))[:11].replace('.',',')+"\n"
+                rbuf += milistotime(lasttime) +" --> "+ milistotime(cctime) +"\n"
                 temp = re.sub("\n","",temp)
                 temp = re.sub("&nbsp;"," ", temp, flags=re.IGNORECASE)
                 temp = re.sub("^<br>","",temp, flags=re.IGNORECASE)
