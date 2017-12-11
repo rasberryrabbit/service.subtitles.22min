@@ -492,6 +492,8 @@ def smitosrt(context):
                 temp = re.sub("&nbsp;"," ", temp, flags=re.IGNORECASE)
                 temp = re.sub("^<br>","",temp, flags=re.IGNORECASE)
                 temp = re.sub("<br>","\n",temp, flags=re.IGNORECASE).encode('utf-8')
+                if temp=="":
+                    temp=" "
                 rbuf += temp+"\n"
                 rbuf += "\n"
             lasttime = cctime
