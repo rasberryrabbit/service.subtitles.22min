@@ -439,14 +439,20 @@ def get_list(url, limit_file, list_mode):
                         if ep_check < 2:
                             continue
                 realfname=name
+                extpos=name.rfind('.')
+                if extpos!=-1:
+                    realext="["+name[extpos+1:]+"]"
+                else:
+                    realext="[]"
                 if not isbunyuc:
                     name=stripextjpg(name)
                 result+=1
-                labelf="[KR]"
+                labelf=""
                 if isbunyuc==True:
                     labelf+="[B]"
                 else:
                     labelf+="[D]"
+                labelf+=realext
                 labelname = realfname if use_titlename == "false" else title_name+" | "+realfname
                 listitem = xbmcgui.ListItem(label          = labelf,
                                             label2         = labelname,
