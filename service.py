@@ -422,15 +422,16 @@ def get_list(url, limit_file, list_mode):
                         ep_check += check_season_episode(name,item['season'],item['episode'])
                         if ep_check < 2:
                             continue
+                realfname=name
                 if not isbunyuc:
                     name=stripextjpg(name)
                 result+=1
                 labelf="[KR]"
                 if isbunyuc==True:
-                    labelf+="[BF]"
+                    labelf+="[B]"
                 else:
-                    labelf+="[DC]"
-                labelname = name if use_titlename == "false" else title_name+" | "+name
+                    labelf+="[D]"
+                labelname = realfname if use_titlename == "false" else title_name+" | "+realfname
                 listitem = xbmcgui.ListItem(label          = labelf,
                                             label2         = labelname,
                                             iconImage      = "0",
