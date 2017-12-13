@@ -1,3 +1,6 @@
+0.8.31
+- fix label info
+
 0.8.30
 - add smi to srt conversion
 
