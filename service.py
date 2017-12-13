@@ -285,7 +285,7 @@ def get_files(url):
     # get naver link
     nbloglist=[]
     link_pattern = "<a\s+href=\"([^\"]+)\"\s+target=\"_blank\"\s+class=\"tx\-link\">"
-    files = re.findall(link_pattern,content_file)
+    files = re.findall(link_pattern,content_file,re.IGNORECASE)
     for link in files:
         if link.find("blog.naver.com")!=-1:
             r_isbunyuc = True
@@ -296,7 +296,7 @@ def get_files(url):
         else:
             content_file = read_url2(link)
             fwdlink_pattern = "<frame\s+[^>]+\s+src=\'([^\']+)\'"
-            framedat = re.findall(fwdlink_pattern,content_file)
+            framedat = re.findall(fwdlink_pattern,content_file,re.IGNORECASE)
             for framelink in framedat:
                 if framelink.find("blog.naver.com")!=-1:
                     r_isbunyuc = True
@@ -305,21 +305,18 @@ def get_files(url):
                     for name, flink in ret_naver:
                         ret_list.append([framelink, name, flink])
     # check non-url link
-    if len(ret_list)==0:
-        findnblog = re.compile(">([^<]+blog.naver.com[^<]+)<",re.IGNORECASE)
-        nblog = findnblog.search(content_file)
-        if nblog:
-            nbloglink=nblog.group(1)
-            InList=False
-            for nlink in nbloglist:
-                if nlink==nbloglink and nlink!="":
-                    InList=True
-                    break
-            if InList==False:
-                r_isbunyuc = True
-                ret_naver = get_files_naver(nbloglink)
-                for name, flink in ret_naver:
-                    ret_list.append([nbloglink, name, flink])
+    nblog = re.findall(">([^<]+blog\.naver\.com[^<]+)<",content_file,re.IGNORECASE)
+    for nbloglink in nblog:
+        InList=False
+        for nlink in nbloglist:
+            if nlink==nbloglink and nlink!="":
+                InList=True
+                break
+        if InList==False:
+            r_isbunyuc = True
+            ret_naver = get_files_naver(nbloglink)
+            for name, flink in ret_naver:
+                ret_list.append([nbloglink, name, flink])
     return ret_list, r_isbunyuc
     
 # 번역 포럼의 내용을 파싱해서 파일 이름을과 다운로드 주소를 얻어냄.
