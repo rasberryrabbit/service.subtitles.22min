@@ -549,7 +549,10 @@ def download_file(url,furl,name):
             local_temp_file += '.smi'
     else:
         if CheckSUBIsSRT(subbufchk):
-            local_temp_file += '.srt'            
+            local_temp_file += '.srt'
+        else:
+            if subbufchk[0]=='\x50' and subbufchk[1]=='\x4b' and subbufchk[2]=='\x03' and subbufchk[3]=='\x04':
+                local_temp_file += '.zip'
     local_file_handle = open( local_temp_file, "wb" )
     local_file_handle.write(subbuf)
     local_file_handle.close()
