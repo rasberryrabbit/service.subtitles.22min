@@ -557,7 +557,7 @@ def download_file(url,furl,name):
             else:
                 # rar
                 if subbufchk[0]=='\x52' and subbufchk[1]=='\x61' and subbufchk[2]=='\x72' and subbufchk[3]=='\x21' and subbufchk[4]=='\x1A' and subbufchk[5]=='\x07':
-                local_temp_file += '.rar'
+                    local_temp_file += '.rar'
     local_file_handle = open( local_temp_file, "wb" )
     local_file_handle.write(subbuf)
     local_file_handle.close()
